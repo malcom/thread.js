@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Thread example</title>
+	<script src="thread.js" type="application/javascript;version=1.7"></script>
+	<script type="application/javascript;version=1.7">
+	function go() {
+
+		function randomize(e) {
+			while (true) {
+				var str = '';
+				for (var i=1; i<=100; i++) {
+					str += Math.random().toString(36).substr(2, 5);
+					if (!(i%10)) str += "\n";
+				}
+				e.innerHTML = str;
+				yield;
+			}
+		}
+
+		function count(e, n, k) {
+			for (var i=0; i<n; i++) {
+				e.innerHTML = i;
+
+		//		for (var j=0; j<500; j++)
+		//			;
+
+				if (!(i%k))
+					yield;
+			}
+		}
+
+
+		function run_new_counter(parent, n) {
+			var div = document.createElement('div');
+			var label = document.createElement('label');
+			var span = document.createElement('span');
+
+			div.appendChild(label);
+			div.appendChild(span);
+			parent.appendChild(div);
+
+			Thread.New(
+				count(label, n, 5),
+				function(thread) { span.innerHTML = 'complete (' + thread.time() + 'ms)' }
+			).run();
+
+		}
+
+		function new_counters() {
+			var parent = document.getElementById('count');
+			for (var i=0; i<10; i++)
+				run_new_counter(parent, Math.ceil(Math.random()*100) * 1000);
+
+		}
+
+
+		// random text generator
+
+		// observe randThread info
+		setInterval(
+			function() {
+				document.getElementById('state').innerHTML = Thread.State.toString( randThread.state() );
+				document.getElementById('time').innerHTML = randThread.time();
+			}, 10
+		);
+
+		var randThread = Thread.New(
+			randomize(document.getElementById('rand'))
+		);
+
+		randThread.run();
+
+
+		// count to 5k
+		run_new_counter(document.getElementById('count'), 5000);
+
+
+		// expose to global scope to handle via button click
+		window.randThread = randThread;
+		window.new_counters = new_counters;
+	}
+	</script>
+	<style>
+		#rand {
+			white-space: pre;
+			font-family: monospace;
+			margin: 10px;
+		}
+		span {
+			margin-left: 5px;
+			color: green;
+		}
+	</style>
+</head>
+<body onload="go()">
+
+	<button onclick="randThread.run()">Start</button>
+	<button onclick="randThread.pause()">Pause</button>
+	<button onclick="randThread.resume()">Resume</button>
+	<button onclick="randThread.kill()">Kill</button>
+
+	<label>state:</label><span id="state">x</span>
+	<label>time exec:</label><span id="time">x</span>
+
+	<div id="rand"></div>
+
+
+	<button onclick="new_counters()">Start new 10 counter threads</button>
+
+	<div id="count"></div>
+
+</body>
+</html>
