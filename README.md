@@ -33,3 +33,5 @@ More [examples](http://github.com/malcom/thread.js/blob/master/example.html).
 
 # Links #
 * [Thread.js at projects.malcom.pl](http://projects.malcom.pl/libs/thread-js.xhtml)
+* [Thread.js at MalDevBlog](http://blog.malcom.pl/2013/01/08/thread-js/)
+* [Wielowątkowość w JavaScript at MalDevBlog](http://blog.malcom.pl/2013/01/07/wielowatkowosc-w-javascript/)
